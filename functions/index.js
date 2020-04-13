@@ -18,20 +18,34 @@ exports.setGeoLocation = functions.firestore
     }
   })
 
+const createNotification = (businessId, notification) => {
+  return admin.firestore()
+    .collection('businesses')
+    .doc(businessId)
+    .collection('notifications')
+    .add(notification)
+    .then(doc => console.log("notification created", doc))
+}
 
-
-exports.userEntranceRequest = functions.firestore
-  .document('businesses/{businessId}/usersEntranceRequest/{userEntranceRequest}')
+exports.newRequest = functions.firestore
+  .document('businesses/{businessId}/requests/{requestId}')
   .onCreate((doc, context) => {
     const businessId = context.params.businessId
-    
-    const userEntranceRequest = doc.data();
-    const userEntranceRequestNotification = {
-      userEntranceRequest: userEntranceRequest, // The structure of this field is defined in the user app
-      isUserCoronaFree: false, // TODO: We need to get this information from the database after we link to it
-      time: admin.firestore.FieldValue.serverTimestamp(),
-    }
+    const userId = doc.get('userId')
 
-    return createUserEntranceRequestNotification(userEntranceRequestNotification, 4)
-  }
-)
+    return admin.firestore()
+      .collection('users')
+      .doc(userId)
+      .get()
+      .then(doc => {
+        const notification = {
+          timestamp: admin.firestore.FieldValue.serverTimestamp(),
+          userId: userId,
+          userName: doc.get('name'),
+          socialNumber: doc.get('socialNumber'),
+          isUserCoronaFree: true, // TODO: We need to get this information from the database after we link to it
+        }
+        return createNotification(businessId, notification)
+      })
+  })
+  

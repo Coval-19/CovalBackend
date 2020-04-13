@@ -9,23 +9,20 @@ Firebase cloud functions and firestore rules.
     name
     address
     addressCoordinates    # Updated by setGeoLocation
+    /notifications
+      /{notificationId}   # Created by createNotification
+        timestamp
+        userId
+        userName
+        socialNumber
+        isUserCoronaFree  # Retrived from external DB
+    /requests
+      /{requestId}        # Created by the user app
+        userId
 /users
   /{userId}
     name
     socialNumber
-/requests                 # Created by the user app
-  /{businessId}
-    /{requestId}
-      userId
-/notifications            # Created by createNotification
-  /{businessId}
-    /{notificationId}
-      timestamp
-      userId
-      userProfileImage
-      userName
-      isUserCoronaFree    # Retrived from external DB
-
 ```
 
 ## Functions
