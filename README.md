@@ -23,6 +23,11 @@ Firebase cloud functions and firestore rules.
   /{userId}
     name
     socialNumber
+    /responses
+      /{responseId}
+        timestamp
+        businessId
+        isApproved
 ```
 
 ## Functions
