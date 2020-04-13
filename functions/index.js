@@ -1,12 +1,26 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const {getGeoLocation} = require('./geocodingApi')
+
 admin.initializeApp(functions.config().firebase)
 
-const createUserEntranceRequestNotification = async (userEntranceRequestNotification, businessId) => {
-  const doc = await admin.firestore().collection('?')
-    .add(userEntranceRequestNotification);
-  return console.log(doc);
-}
+exports.setGeoLocation = functions.firestore
+  .document('businesses/{businessId}')
+  .onCreate((doc) => {
+    return getGeoLocation(doc.get('address')).
+      then(location => {
+        console.log(location.lat, location.lng)
+        
+        const geoPoint = [location.lat, location.lng].join(',') // TODO: Change to some type of GeoPoint
+
+        return doc.ref.set({
+          addressCoordinates: geoPoint
+        }, {merge: true})
+
+      }).catch(error => {
+        console.log(error)
+      })
+  })
 
 exports.userEntranceRequest = functions.firestore
   .document('businesses/{businessId}/usersEntranceRequest/{userEntranceRequest}')
