@@ -12,6 +12,7 @@ Firebase cloud functions and firestore rules.
     /notifications
       /{notificationId}   # Created by createNotification
         timestamp
+        requestId
         userId
         userName
         socialNumber
@@ -26,7 +27,10 @@ Firebase cloud functions and firestore rules.
     /responses
       /{responseId}
         timestamp
+        requestId
         businessId
+        businessName
+        businessAddress
         isApproved
 ```
 

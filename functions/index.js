@@ -4,12 +4,30 @@ const {getGeoLocation} = require('./geocodingApi')
 
 admin.initializeApp(functions.config().firebase)
 
-exports.setGeoLocation = functions.firestore
+exports.setGeoLocationOnCreate = functions.firestore
   .document('businesses/{businessId}')
   .onCreate(async (doc) => {
     try {
       const location = await getGeoLocation(doc.get('address'));
       return doc.ref.set({
+        addressCoordinates: location
+      }, { merge: true });
+    }
+    catch (error) {
+      console.log(error);
+    }
+  })
+
+exports.setGeoLocationOnUpdate = functions.firestore
+  .document('businesses/{businessId}')
+  .onUpdate(async (doc) => {
+    if (doc.before.get('address') === doc.after.get('address')) {
+      return null
+    }
+
+    try {
+      const location = await getGeoLocation(doc.after.get('address'));
+      return doc.after.ref.set({
         addressCoordinates: location
       }, { merge: true });
     }
