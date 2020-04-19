@@ -7,6 +7,7 @@ Firebase cloud functions and firestore rules.
 /businesses
   /{businessId}
     name
+    decription
     address
     addressCoordinates    # Updated by setGeoLocation
     /notifications
@@ -34,10 +35,32 @@ Firebase cloud functions and firestore rules.
         isApproved
 ```
 
+## Action Flows
+### 
+
 ## Functions
-### setGeoLocation Function
+### setGeoLocationOnCreate
+On creation of a business, set the geo location based on the address
+Adds `businesses/{businessId}/addressCoordinates` baseed on `businesses/{businessId}/address`
+
+### setGeoLocationOnUpdate
+On update of a business, set the geo location based on the address only if it changed.
+Adds `businesses/{businessId}/addressCoordinates` baseed on `businesses/{businessId}/address`
+
+### newRequest
+Sends a motification to a business after a user has requested entrance.
+
+## Setup
+### Upload Functions
+```
+firebase deploy --only functions
+```
+
+### Geocoding API Functions Setup
 Updates the address coordinates to a newly created business
 
 Requires an API key from Geocoding API  
 Set API key with:  
-`firebase functions:config:set google_cloud_platform.key=<API_KEY>`
+```
+firebase functions:config:set google_cloud_platform.key=<API_KEY>
+```
