@@ -1,6 +1,7 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const {getGeoLocation} = require('./geocodingApi')
+const {isUserCoronaFree} = require('./coronaIsolationApi')
 
 admin.initializeApp(functions.config().firebase)
 
@@ -49,6 +50,7 @@ exports.newRequest = functions.firestore
   .document('businesses/{businessId}/requests/{requestId}')
   .onCreate((doc, context) => {
     const businessId = context.params.businessId
+    const requestId = context.params.requestId
     const userId = doc.get('userId')
 
     return admin.firestore()
@@ -58,10 +60,11 @@ exports.newRequest = functions.firestore
       .then(doc => {
         const notification = {
           timestamp: admin.firestore.FieldValue.serverTimestamp(),
+          requestId: requestId,
           userId: userId,
           userName: doc.get('name'),
           socialNumber: doc.get('socialNumber'),
-          isUserCoronaFree: true, // TODO: We need to get this information from the database after we link to it
+          isUserCoronaFree: isUserCoronaFree(userId),
         }
         return createNotification(businessId, notification)
       })
