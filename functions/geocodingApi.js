@@ -14,7 +14,7 @@ exports.getGeoLocation = async (address) => {
 
   const getQueryParams = Object.entries(params).map(([k, v]) => k + '=' + v).join('&')
 
-  const url = 'https://maps.googleapis.com/maps/api/geocode/json?' + getQueryParams
+  const url = encodeURI('https://maps.googleapis.com/maps/api/geocode/json?' + getQueryParams)
 
   const response = await request({
     url: url,
